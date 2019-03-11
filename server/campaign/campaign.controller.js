@@ -1,16 +1,16 @@
-const config = require('../../config/config');
 const adsSdk = require('facebook-nodejs-business-sdk');
+const config = require('../../config/config');
 const Campaign = require('./campaign.model');
 
 const accessToken = config.fb.token;
 adsSdk.FacebookAdsApi.init(accessToken);
-const AdAccount = adsSdk.AdAccount;
+const { AdAccount } = adsSdk;
 const CampaignFB = adsSdk.Campaign;
 const account = new AdAccount(`act_${config.fb.appId}`);
 
 const asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index++) {  // eslint-disable-line no-plusplus
-    await callback(array[index], index, array);
+  for (let index = 0; index < array.length; index++) { // eslint-disable-line no-plusplus
+    await callback(array[index], index, array); // eslint-disable-line no-await-in-loop
   }
 };
 
@@ -83,7 +83,7 @@ function list(req, res, next) {
 async function deleteCompaign(compaignItem) {
   const gotCompaign = new CampaignFB(compaignItem.campaignId);
   await gotCompaign.delete();
-  return await Campaign.removeOne(compaignItem._id);
+  await Campaign.removeOne(compaignItem._id);
 }
 
 async function remove(req, res, next) {
@@ -96,4 +96,6 @@ async function remove(req, res, next) {
     .catch(e => next(e));
 }
 
-module.exports = { load, get, create, list, remove };
+module.exports = {
+  load, get, create, list, remove,
+};

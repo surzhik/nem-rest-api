@@ -45,7 +45,7 @@ if (config.env === 'development') {
       msg:
         'HTTP {{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms',
       colorStatus: true, // Color the status code (default green, 3XX cyan, 4XX yellow, 5XX red).
-    })
+    }),
   );
 }
 
@@ -61,7 +61,7 @@ app.use((err, req, res, next) => {
       .join(' and ');
     const error = new APIError(unifiedErrorMessage, err.status, true);
     return next(error);
-  } else if (!(err instanceof APIError)) {
+  } if (!(err instanceof APIError)) {
     const apiError = new APIError(err.message, err.status, err.isPublic);
     return next(apiError);
   }
@@ -79,7 +79,7 @@ if (config.env !== 'test') {
   app.use(
     expressWinston.errorLogger({
       winstonInstance,
-    })
+    }),
   );
 }
 
@@ -89,11 +89,9 @@ app.use((
   req,
   res,
   next, // eslint-disable-line no-unused-vars
-) =>
-  res.status(err.status).json({
-    message: err.isPublic ? err.message : httpStatus[err.status],
-    stack: config.env === 'development' ? err.stack : {},
-  }),
-);
+) => res.status(err.status).json({
+  message: err.isPublic ? err.message : httpStatus[err.status],
+  stack: config.env === 'development' ? err.stack : {},
+}));
 
 module.exports = app;
